@@ -22,3 +22,54 @@ frame.head()
 #upload frame to csv
 frame.to_csv("file_name.csv")
 
+#access properties of frames
+frame.Yes
+frame["Yes"] #allows accessing series with reserved characters in them
+
+
+#pandas indexing
+frame.iloc[0]
+#row first, column second
+#access column
+frame.iloc[:, 0]
+frame.iloc[:3, 0]
+
+#a list can be parsed as well
+frame.iloc[[1, 2, 3],0]
+
+#...as well as negative indexes
+frame.iloc[-5:]
+
+#label-based indexing
+reviews.loc[0, 'country']
+reviews.loc[:, ['country', 'points']]
+
+#loc indexes inclusively
+#[0: 10] = 0,...,10
+
+#iloc indexes exclusively
+#[0: 10] = 0,...,9
+
+#conditional selection
+#frame["Yes"] == 50
+
+#the results can be accessed via .loc
+frame.loc[frame["Yes"] == 50]
+
+#check if a data value is in a list of values
+frame.loc[frame["Yes"].isin(['50','2'])]
+
+#check for null or notnull
+frame.loc[frame["Yes"].isnull()]
+frame.loc[frame["Yes"].notnull()]
+
+#Data can be assigned easily
+reviews['critic'] = 'everyone'
+reviews['critic']
+
+reviews['index_backwards'] = range(len(reviews), 0, -1)
+reviews['index_backwards']
+
+#reviews.description.iloc[0],  reviews.description.loc[0],  reviews.description[0]
+
+
