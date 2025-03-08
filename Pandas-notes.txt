@@ -70,6 +70,42 @@ reviews['critic']
 reviews['index_backwards'] = range(len(reviews), 0, -1)
 reviews['index_backwards']
 
-#reviews.description.iloc[0],  reviews.description.loc[0],  reviews.description[0]
+#reviews.description.iloc[0],  reviews.description.loc[0],  reviews.description[0] all return the same result
+
+#######################
+#Some summary statistics can be found in pandas
+
+#Describe depends on the values in the feature
+reviews.points.describe()
+reviews.taster_name.describe()
+
+reviews.points.mean()
+
+#Unique values can also be accessed...
+reviews.taster_name.unique()
+
+#and counted
+reviews.taster_name.value_counts()
+
+#mapping and lambdas can also be applied
+review_points_mean = reviews.points.mean()
+reviews.points.map(lambda p: p - review_points_mean)
+#The above code remeans the ratings to 0
+
+
+#Functions can also be applied on each row
+def remean_points(row):
+  row.points = row.points - review_points_mean
+  return row
+
+reviews.apply(remean_points, axis='columns')
+#Note that map() and apply() return new, transformed Series and DataFrames, respectively
+
+#Alternate way to remean
+reviews.points - review_points_mean
+
+reviews.country + " - " + reviews.region_1
+
+
 
 
