@@ -1,3 +1,6 @@
+##########################
+#Creating, Reading and writing
+
 #Import pandas
 import pandas as pd
 
@@ -26,7 +29,7 @@ frame.to_csv("file_name.csv")
 frame.Yes
 frame["Yes"] #allows accessing series with reserved characters in them
 
-
+#############################
 #pandas indexing
 frame.iloc[0]
 #row first, column second
@@ -73,6 +76,8 @@ reviews['index_backwards']
 #reviews.description.iloc[0],  reviews.description.loc[0],  reviews.description[0] all return the same result
 
 #######################
+#Summary functions and Maps
+
 #Some summary statistics can be found in pandas
 
 #Describe depends on the values in the feature
@@ -105,6 +110,104 @@ reviews.apply(remean_points, axis='columns')
 reviews.points - review_points_mean
 
 reviews.country + " - " + reviews.region_1
+
+##########################
+#Grouping and Sorting
+
+#value_counts() is shorthand for the following:
+reviews.groupby("points").points.count()
+
+#any summary functions can be used this way:
+reviews.groupby("points")["price"].min()
+
+#apply can also be used here:
+reviews.groupby("winery").apply(lambda df: df.title.iloc[0])
+
+#groupings can be made by more than one column:
+reviews.groupby(["country", "province"]).apply(lambda df: df.loc[df.points.idxmax()])
+
+#another important groupby() method is agg()
+reviews.groupby(["country"]).price.agg([len, min, max])
+
+#sometimes groupby() and other methods might return a multi-index
+countries_reviewed = reviews.groupby(["country", "province"]).description.agg([len])
+
+#the most usual way to access these indices is:
+countries_reviewed.reset_index()
+
+#usually order of rows in multi-indices is dependent on the values in the index, not the data
+#this can be mitigated by sorting:
+
+countries_reviewed = countries_reviewed.reset_index()
+countries_reviewed.sort_values(by = "len")
+
+#sort_values usually defaults to ascending:
+countries_reviewed.sort_values(by = "len", ascending = False)
+
+#sort_index() sorts by indices:
+countries_reviewed.sort_index()
+
+#elements can be sorted by more than one column at a time:
+countries_reviewed.sort_values(by = ["countries", "len"])
+
+###########################
+#Data types and missing values
+
+#type of columns can be accessed:
+reviews["price"].dtype
+reviews.dtypes
+
+#columns consisting entirely of strings get given the object type
+
+#where it makes sense, column types can be converted:
+reviews["points"].astype("float64")
+
+#a dataframe or series index has its own dtype:
+reviews.index.dtype
+-dtype("int64")
+
+#NaN stands for "Not a number", for technical reviews takes float64 dtype
+#isnull and notnull are supposed to be accessed thusly:
+
+reviews[pd.isnull(reviews["country"])]
+
+#missing values can be replaced by fillna()
+reviews.region_2.fillna("Unknown")
+
+#Alternatively, each missing value can be replaced by the first non-null value that appears after the given record in the database (backfilling)
+
+#If there is a nonnull value we would like to replace, it can be achieved via:
+reviews.taster_twitter_handle.replace("@kerinokeefe", "@kerino")
+
+############################
+#Renaming and Combining
+
+#Column and index names can be changed via rename
+reviews.rename(columns = {"points": "score"})
+reviews.rename(index = {0: "firstEntry", 1: "secondEntry"})
+
+#columns will be renamed very often, indexes rarer. Use set_index() for that
+reviews.rename_axis("wines", axis = "rows").rename_axis("fields", axis = "columns")
+
+
+#In increasing complexity, DataFrames and Series can be combined via concat(), join() and merge()
+
+canadian_youtube = pd.read_csv("../input/youtube-new/CAvideos.csv")
+british_youtube = pd.read_csv("../input/youtube-new/GBvideos.csv")
+
+pd.concat([canadian_youtube, british_youtube])
+
+#to see videos that were trending in both Canada and UK
+left = canadian_youtube.set_index(['title', 'trending_date'])
+right = british_youtube.set_index(['title', 'trending_date'])
+
+left.join(right, lsuffix='_CAN', rsuffix='_UK')
+
+
+
+
+
+
 
 
 
